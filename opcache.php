@@ -130,6 +130,7 @@ function getStringFromPropertyAndValue($property, $value)
         <ul class="nav navbar-nav">
             <li><a href="#hits">Hits</a></li>
             <li><a href="#memory">Memory</a></li>
+            <li><a href="#strings_memory">Strings memory</a></li>
             <li><a href="#keys">Keys</a></li>
             <li><a href="#status">Status</a></li>
             <li><a href="#configuration">Configuration</a></li>
@@ -181,6 +182,23 @@ function getStringFromPropertyAndValue($property, $value)
     </div>
 
     <?php
+    $stats = $status['interned_strings_usage'];
+    $stringsUsedMemory = round($stats['used_memory'], 2);
+    $stringsFreeMemory = round($stats['free_memory'], 2);
+    $stringsTotalMemory = round($stats['buffer_size'], 2);
+    ?>
+    <h2 id="strings_memory">Strings memory: <?= size_for_humans($stringsUsedMemory) ?> of <?= size_for_humans($stringsTotalMemory) ?></h2>
+    <div class="progress progress-striped">
+        <div class="progress-bar progress-bar-danger" style="width: <?= round(($stringsUsedMemory / $stringsTotalMemory) * 100, 0) ?>%">
+            <span class="sr-only">Used (<?= $stringsUsedMemory ?>)</span>
+        </div>
+        <div class="progress-bar progress-bar-success" style="width: <?= round(($stringsFreeMemory / $stringsTotalMemory) * 100, 0) ?>%">
+            <span class="sr-only">Free (<?= $stringsFreeMemory ?>)</span>
+        </div>
+    </div>
+
+    <?php
+    $stats = $status['opcache_statistics'];
     $totalKeys = $stats['max_cached_keys'];
     $usedKeys = $stats['num_cached_keys'];
     $freeKeys = $totalKeys - $usedKeys;
@@ -194,6 +212,7 @@ function getStringFromPropertyAndValue($property, $value)
             <span class="sr-only">Free keys</span>
         </div>
     </div>
+
 
     <h2 id="status">Status</h2>
     <div class="table-responsive">
